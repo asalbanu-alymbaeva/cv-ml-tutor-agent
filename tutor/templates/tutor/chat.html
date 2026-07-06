@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>CV/ML Tutor — AI Yordamchi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #eef2f7 0%, #dfe9f3 100%);
+            min-height: 100vh;
+        }
+        .header-icon { font-size: 2.5rem; }
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+        .answer-card {
+            border-left: 5px solid #4361ee;
+        }
+        #loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(255,255,255,0.92);
+            z-index: 999;
+            text-align: center;
+            padding-top: 15%;
+        }
+        .spinner-border { width: 3rem; height: 3rem; }
+        #stage-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            color: #4361ee;
+        }
+        textarea.form-control { border-radius: 12px; }
+        .btn-primary {
+            background: #4361ee;
+            border: none;
+            border-radius: 12px;
+            padding: 10px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loading-overlay">
+        <div class="spinner-border text-primary" role="status"></div>
+        <div id="stage-text">Reja tuzilmoqda...</div>
+    </div>
+
+    <div class="container py-5" style="max-width: 700px;">
+        <div class="text-center mb-4">
+            <div class="header-icon">🎓</div>
+            <h2>CV/ML Tutor</h2>
+            <p class="text-muted">Computer Vision va Machine Learning bo'yicha AI yordamchi</p>
+        </div>
+
+        <div class="card p-4 mb-4">
+            <form method="post" id="tutor-form">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <textarea name="question" class="form-control" rows="3"
+                        placeholder="Savolingizni yozing... (masalan: CNN qanday ishlaydi?)"
+                        required>{{ question|default:"" }}</textarea>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Savol berish</button>
+            </form>
+        </div>
+
+        {% if error %}
+        <div class="alert alert-danger">
+            ⚠️ {{ error }}
+        </div>
+        {% endif %}
+
+        {% if answer %}
+        <div class="card answer-card p-4">
+            <h6 class="text-primary mb-3">💬 Savol: {{ question }}</h6>
+            <div>{{ answer|linebreaks }}</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        const form = document.getElementById('tutor-form');
+        const overlay = document.getElementById('loading-overlay');
+        const stageText = document.getElementById('stage-text');
+        const stages = [
+            "Reja tuzilmoqda... (Agent 1: Planner)",
+            "Tushuntirilmoqda... (Agent 2: Explainer)",
+            "Tekshirilmoqda... (Agent 3: Reviewer)"
+        ];
+
+        form.addEventListener('submit', function () {
+            overlay.style.display = 'block';
+            let i = 0;
+            stageText.textContent = stages[i];
+            setInterval(function () {
+                i = (i + 1) % stages.length;
+                stageText.textContent = stages[i];
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
